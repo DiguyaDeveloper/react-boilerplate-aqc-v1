@@ -1,0 +1,26 @@
+export const defaultTheme = {
+	colors: {
+		primary: '#FF5733',
+		secondary: '#571845',
+		white: '#FFF',
+		black: '#000',
+		glass: 'rgba(101, 101, 101, 0.3)',
+		grayPrimary: '#656565',
+		grayLight: '#ABABAB',
+		light: '#F2F2F2',
+		background: '#FBEA0D',
+		darkBackground: '#FFC300',
+		transparent: 'transparent',
+		lightText: '#656565',
+		vowel: '#EBD935',
+		consonant: '#FFC300',
+		warning: '#FD8469',
+		error: '#FF0000',
+		success: '#25ae88',
+	},
+	fonts: {
+		primary: 'Oswald',
+		title: 'Fredoka One',
+		body: 'Roboto',
+	},
+};

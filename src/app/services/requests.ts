@@ -1,0 +1,108 @@
+import axios, { AxiosRequestConfig } from 'axios';
+import { getToken } from './sessionsServices/index';
+
+interface IRequesProps {
+	url: string;
+	headers?: { [key: string]: string | number };
+	params?: { [key: string]: string | number };
+	body?: unknown;
+}
+
+const API_URL = process.env.REACT_APP_API_URL;
+
+const api = axios.create({
+	baseURL: API_URL,
+});
+
+axios.interceptors.request.use(
+	(config) => {
+		if (config && config.url) {
+			const { origin } = new URL(config.url);
+			const allowedOrigins = [API_URL];
+			const token = getToken();
+			if (allowedOrigins.includes(origin) && token) {
+				config.headers.Authorization = `Bearer ${token}`;
+			}
+		}
+		return config;
+	},
+	(error) => {
+		return Promise.reject(error);
+	},
+);
+
+async function requestResponse<T>(config: AxiosRequestConfig): Promise<T> {
+	try {
+		const response = await api.request<T>(config);
+
+		if (![200, 201].includes(response.status)) {
+			throw new Error(
+				`response with status ${response.status} - ${JSON.stringify(response)}`,
+			);
+		}
+		return response.data;
+	} catch (error) {
+		throw new Error(`Error to request ${config.url}: ${error.message}`);
+	}
+}
+
+async function get<T>({ url, headers, params }: IRequesProps): Promise<T> {
+	const config: AxiosRequestConfig = {
+		method: 'GET',
+		url,
+		headers,
+		params,
+	};
+
+	return requestResponse<T>(config);
+}
+
+async function post<T>({ url, headers, body }: IRequesProps): Promise<T> {
+	const config: AxiosRequestConfig = {
+		method: 'POST',
+		url,
+		headers,
+		data: body,
+	};
+
+	return requestResponse<T>(config);
+}
+
+async function put<T>({ url, headers, body }: IRequesProps): Promise<T> {
+	const config: AxiosRequestConfig = {
+		method: 'PUT',
+		url,
+		headers,
+		data: body,
+	};
+
+	return requestResponse<T>(config);
+}
+
+async function patch<T>({ url, headers, body }: IRequesProps): Promise<T> {
+	const config: AxiosRequestConfig = {
+		method: 'PATCH',
+		url,
+		headers,
+		data: body,
+	};
+
+	return requestResponse<T>(config);
+}
+
+async function remove<T>({
+	url,
+	headers,
+	params,
+}: IRequesProps): Promise<void> {
+	const config: AxiosRequestConfig = {
+		method: 'DELETE',
+		url,
+		headers,
+		params,
+	};
+
+	requestResponse<T>(config);
+}
+
+export default { get, post, put, patch, remove };
